@@ -39,7 +39,7 @@ static func grid_to_screen(row: int, col: int) -> Vector2:
 func tween_to_row(target_row: int) -> Tween:
 	var target_y := (BoardConst.ROWS - 1 - target_row) * BoardConst.CELL_SIZE
 	var tw := create_tween().set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
-	tw.tween_property(self, "position:y", target_y, 0.12)
+	tw.tween_property(self, "position:y", target_y, BoardConst.ANIM_GRAVITY)
 	return tw
 
 ## 頂出動畫：從畫面下方滑入
@@ -47,21 +47,23 @@ func tween_push_in(target_row: int, col: int) -> Tween:
 	position = Vector2(col * BoardConst.CELL_SIZE, BoardConst.ROWS * BoardConst.CELL_SIZE)
 	var target := grid_to_screen(target_row, col)
 	var tw := create_tween().set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
-	tw.tween_property(self, "position", target, 0.20)
+	tw.tween_property(self, "position", target, BoardConst.ANIM_PUSH)
 	return tw
 
 ## 現有橫條隨頂出往上移動
 func tween_slide_up(new_row: int) -> Tween:
 	var target_y := (BoardConst.ROWS - 1 - new_row) * BoardConst.CELL_SIZE
 	var tw := create_tween().set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
-	tw.tween_property(self, "position:y", target_y, 0.20)
+	tw.tween_property(self, "position:y", target_y, BoardConst.ANIM_PUSH)
 	return tw
 
 ## 消除動畫：壓扁後消失
 func tween_clear() -> Tween:
+	var squish := BoardConst.ANIM_CLEAR * 0.65
+	var fade   := BoardConst.ANIM_CLEAR * 0.35
 	var tw := create_tween()
-	tw.tween_property(self, "scale", Vector2(1.05, 0.05), 0.12)
-	tw.tween_property(self, "modulate:a", 0.0, 0.08)
+	tw.tween_property(self, "scale", Vector2(1.05, 0.05), squish)
+	tw.tween_property(self, "modulate:a", 0.0, fade)
 	return tw
 
 # ── 繪圖 ───────────────────────────────────────────────────────────

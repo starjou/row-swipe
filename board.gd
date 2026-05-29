@@ -23,6 +23,7 @@ var _max_right: int = 0
 # ── 初始化 ─────────────────────────────────────────────────────────
 
 func _ready() -> void:
+	clip_children = CanvasItem.CLIP_CHILDREN_AND_DRAW
 	bm = BoardManager.new()
 	sm = ScoreManager.new()
 	_is_mobile = OS.has_feature("mobile") or OS.has_feature("web_android") or OS.has_feature("web_ios") or OS.has_feature("web_touchscreen")
@@ -233,11 +234,13 @@ func _resolve_physics() -> void:
 		var moves: Array = bm.apply_gravity()
 		if moves.size() > 0:
 			await _anim_gravity(moves)
+			await get_tree().create_timer(BoardConst.ANIM_PAUSE).timeout
 		var result: Dictionary = bm.clear_lines()
 		if int(result["count"]) > 0:
 			sm.add_clears(int(result["count"]))
 			score_updated.emit(sm.score, sm.combo)
 			await _anim_clear(result["bar_ids"])
+			await get_tree().create_timer(BoardConst.ANIM_PAUSE).timeout
 		else:
 			sm.reset_combo()
 			break
@@ -245,6 +248,7 @@ func _resolve_physics() -> void:
 
 func _push_new_row() -> bool:
 	_sync_positions_instant()
+	await get_tree().create_timer(BoardConst.ANIM_PAUSE).timeout
 	var new_ids: Array = bm.generate_row()
 	if not bm.push_row(new_ids):
 		game_over_signal.emit()
