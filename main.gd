@@ -8,13 +8,13 @@ extends Node
 @onready var restart_btn: Button = $UI/GameOverPanel/RestartButton
 @onready var version_label: Label = $UI/VersionLabel
 
-var _combo_timer: SceneTreeTimer = null
+var _combo_clear_tween: Tween = null
 
 func _ready() -> void:
 	board.game_over_signal.connect(_on_game_over)
 	board.score_updated.connect(_on_score_updated)
 	restart_btn.pressed.connect(_on_restart)
-	version_label.text = "v0.1.0"
+	version_label.text = "v0.1.1"
 	version_label.add_theme_font_size_override("font_size", 12)
 	version_label.modulate = Color(1, 1, 1, 0.4)
 	version_label.anchors_preset = Control.PRESET_BOTTOM_RIGHT
@@ -32,14 +32,15 @@ func _start() -> void:
 
 func _on_score_updated(score: int, combo: int) -> void:
 	score_label.text = str(score)
+	if _combo_clear_tween:
+		_combo_clear_tween.kill()
+		_combo_clear_tween = null
 	if combo >= 2:
 		combo_label.text = "COMBO ×%d" % combo
-		_combo_timer = get_tree().create_timer(1.2)
-		await _combo_timer.timeout
-		if combo_label.text != "":
-			combo_label.text = ""
+		_combo_clear_tween = create_tween()
+		_combo_clear_tween.tween_interval(1.2)
+		_combo_clear_tween.tween_callback(func(): combo_label.text = "")
 	else:
-		_combo_timer = null
 		combo_label.text = ""
 
 func _on_game_over() -> void:
