@@ -27,7 +27,7 @@ func _ready() -> void:
 	board.bar_dropped.connect(func(): sfx_drop.play())
 	board.row_pushed.connect(func(): sfx_push.play())
 	restart_btn.pressed.connect(_on_restart)
-	version_label.text = "v1.0.1"
+	version_label.text = "v1.1.0"
 	board.sm.best_score = _load_best_score()
 	_update_best_label()
 	# 記錄浮動 label 的初始位置
@@ -37,10 +37,25 @@ func _ready() -> void:
 
 # ── 最高分存讀 ─────────────────────────────────────────────────────
 
+const FIREBASE_URL = "https://row-swipe-default-rtdb.asia-southeast1.firebasedatabase.app"
+
 func _load_best_score() -> int:
 	if OS.get_name() == "Web":
-		var val = JavaScriptBridge.eval("parseInt(localStorage.getItem('best_score') || '0')")
-		return int(val)
+		var val = JavaScriptBridge.eval("""
+			(function() {
+				try {
+					var xhr = new XMLHttpRequest();
+					xhr.open('GET', '%s/best_score.json', false);
+					xhr.send();
+					if (xhr.status === 200) {
+						var v = parseInt(xhr.responseText);
+						return isNaN(v) ? 0 : v;
+					}
+				} catch(e) {}
+				return 0;
+			})()
+		""" % FIREBASE_URL)
+		return int(val) if val != null else 0
 	if FileAccess.file_exists("user://best_score.dat"):
 		var f := FileAccess.open("user://best_score.dat", FileAccess.READ)
 		return f.get_32()
@@ -48,10 +63,25 @@ func _load_best_score() -> int:
 
 func _save_best_score(val: int) -> void:
 	if OS.get_name() == "Web":
-		JavaScriptBridge.eval("localStorage.setItem('best_score', %d)" % val)
-	else:
-		var f := FileAccess.open("user://best_score.dat", FileAccess.WRITE)
-		f.store_32(val)
+		JavaScriptBridge.eval("""
+			(function() {
+				try {
+					var xhr = new XMLHttpRequest();
+					xhr.open('GET', '%s/best_score.json', false);
+					xhr.send();
+					var current = (xhr.status === 200) ? (parseInt(xhr.responseText) || 0) : 0;
+					if (%d > current) {
+						var xhr2 = new XMLHttpRequest();
+						xhr2.open('PUT', '%s/best_score.json', true);
+						xhr2.setRequestHeader('Content-Type', 'application/json');
+						xhr2.send(JSON.stringify(%d));
+					}
+				} catch(e) {}
+			})()
+		""" % [FIREBASE_URL, val, FIREBASE_URL, val])
+		return
+	var f := FileAccess.open("user://best_score.dat", FileAccess.WRITE)
+	f.store_32(val)
 
 func _update_best_label() -> void:
 	best_score_label.text = "BEST  %d" % board.sm.best_score
