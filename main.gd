@@ -14,7 +14,7 @@ func _ready() -> void:
 	board.game_over_signal.connect(_on_game_over)
 	board.score_updated.connect(_on_score_updated)
 	restart_btn.pressed.connect(_on_restart)
-	version_label.text = "v0.1.1"
+	version_label.text = "v0.1.2"
 	version_label.add_theme_font_size_override("font_size", 12)
 	version_label.modulate = Color(1, 1, 1, 0.4)
 	version_label.anchors_preset = Control.PRESET_BOTTOM_RIGHT
