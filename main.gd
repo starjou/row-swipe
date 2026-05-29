@@ -27,12 +27,13 @@ func _ready() -> void:
 	board.bar_dropped.connect(func(): sfx_drop.play())
 	board.row_pushed.connect(func(): sfx_push.play())
 	restart_btn.pressed.connect(_on_restart)
-	version_label.text = "v1.1.0"
+	version_label.text = "v1.1.1"
 	board.sm.best_score = _load_best_score()
 	_update_best_label()
 	# 記錄浮動 label 的初始位置
 	_label_bases[combo_label] = combo_label.position
 	_label_bases[gain_label]  = gain_label.position
+	bgm.finished.connect(func(): bgm.play())
 	_start()
 
 # ── 最高分存讀 ─────────────────────────────────────────────────────
