@@ -127,8 +127,6 @@ func push_row(bar_ids: Array) -> bool:
 		_erase(id)
 	for id in placed:
 		var new_row: int = int(bars[id]["row"]) + 1
-		if new_row >= BoardConst.ROWS:
-			return false
 		bars[id]["row"] = new_row
 		_place(id, new_row, int(bars[id]["col"]), int(bars[id]["width"]))
 
@@ -195,12 +193,12 @@ func apply_gravity() -> Array:
 	for id in bars:
 		initial[id] = int(bars[id]["row"])
 
+	var sorted: Array = bars.keys()
+	sorted.sort_custom(func(a, b): return int(bars[a]["row"]) < int(bars[b]["row"]))
+
 	var any_moved: bool = true
 	while any_moved:
 		any_moved = false
-		var sorted: Array = bars.keys()
-		sorted.sort_custom(func(a, b): return int(bars[a]["row"]) < int(bars[b]["row"]))
-
 		for id in sorted:
 			if not bars.has(id):
 				continue

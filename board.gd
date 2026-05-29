@@ -276,9 +276,7 @@ func _anim_clear(bar_ids: Array) -> void:
 
 func _anim_push_row(new_ids: Array) -> void:
 	for id in new_ids:
-		var d: Dictionary = bm.get_bar_data(id)
-		var bn: BarNode = _spawn_bar(id)
-		bn.position = Vector2(int(d["col"]) * BoardConst.CELL_SIZE, BoardConst.ROWS * BoardConst.CELL_SIZE)
+		_spawn_bar(id)
 	var last_tw: Tween = null
 	for id in bar_nodes:
 		var d: Dictionary = bm.get_bar_data(id)

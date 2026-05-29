@@ -8,6 +8,8 @@ extends Node
 @onready var restart_btn: Button = $UI/GameOverPanel/RestartButton
 @onready var version_label: Label = $UI/VersionLabel
 
+var _combo_timer: SceneTreeTimer = null
+
 func _ready() -> void:
 	board.game_over_signal.connect(_on_game_over)
 	board.score_updated.connect(_on_score_updated)
@@ -32,9 +34,12 @@ func _on_score_updated(score: int, combo: int) -> void:
 	score_label.text = str(score)
 	if combo >= 2:
 		combo_label.text = "COMBO ×%d" % combo
-		await get_tree().create_timer(1.2).timeout
-		combo_label.text = ""
+		_combo_timer = get_tree().create_timer(1.2)
+		await _combo_timer.timeout
+		if combo_label.text != "":
+			combo_label.text = ""
 	else:
+		_combo_timer = null
 		combo_label.text = ""
 
 func _on_game_over() -> void:
