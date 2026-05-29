@@ -2,57 +2,242 @@
 
 [ext_resource type="Script" uid="uid://ccnjwhbnqlr58" path="res://main.gd" id="1_ig7tw"]
 [ext_resource type="Script" uid="uid://cba5q4r3c3s6o" path="res://board.gd" id="2_0xm2m"]
+[ext_resource type="Texture2D" uid="uid://dx2vgsv7a80wp" path="res://assets/images/bg.png" id="2_h2yge"]
+[ext_resource type="AudioStream" uid="uid://dr4ttvoew04gb" path="res://assets/sounds/bgm.mp3" id="4_1bvp3"]
+[ext_resource type="AudioStream" uid="uid://dv784lpj5xmnb" path="res://assets/sounds/drop.ogg" id="4_kek77"]
+[ext_resource type="AudioStream" uid="uid://bynhmap6bm1cj" path="res://assets/sounds/clear.ogg" id="5_4c57u"]
+[ext_resource type="AudioStream" uid="uid://bo3qkv4whsxgg" path="res://assets/sounds/combo.ogg" id="6_efxa6"]
+[ext_resource type="AudioStream" uid="uid://dyj7d1fb7a1xy" path="res://assets/sounds/push.ogg" id="7_dg77c"]
+[ext_resource type="AudioStream" uid="uid://vnn4ikd5v8pw" path="res://assets/sounds/game_over.ogg" id="8_ycdy4"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_h2yge"]
+content_margin_left = 4.0
+content_margin_top = 4.0
+content_margin_right = 4.0
+content_margin_bottom = 4.0
+bg_color = Color(0, 0, 0, 1)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+shadow_color = Color(1, 1, 1, 0.6)
+shadow_size = 5
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_1bvp3"]
+bg_color = Color(0.09411765, 0.09411765, 0.09411765, 1)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+shadow_color = Color(1, 1, 1, 0.6)
+shadow_size = 10
 
 [node name="Main" type="Node" unique_id=26473936]
 script = ExtResource("1_ig7tw")
+
+[node name="CanvasLayer" type="CanvasLayer" parent="." unique_id=1799496222]
+layer = -1
+
+[node name="TextureRect" type="TextureRect" parent="CanvasLayer" unique_id=764268965]
+offset_right = 40.0
+offset_bottom = 40.0
+texture = ExtResource("2_h2yge")
 
 [node name="Board" type="Node2D" parent="." unique_id=1085345601]
 position = Vector2(40, 120)
 script = ExtResource("2_0xm2m")
 
+[node name="ColorRect" type="ColorRect" parent="Board" unique_id=1302818090]
+visible = false
+offset_right = 480.0
+offset_bottom = 600.0
+
 [node name="UI" type="CanvasLayer" parent="." unique_id=566320836]
 
-[node name="ScoreLabel" type="Label" parent="UI" unique_id=1745412003]
-offset_left = 8.0
-offset_top = 8.0
-offset_right = 48.0
-offset_bottom = 31.0
-text = "0"
+[node name="HeadPanel" type="Control" parent="UI" unique_id=529273618]
+layout_mode = 3
+anchors_preset = 0
+offset_top = 10.0
+offset_right = 560.0
+offset_bottom = 130.0
 
-[node name="ComboLabel" type="Label" parent="UI" unique_id=1413286005]
-offset_left = 8.0
-offset_top = 44.0
-offset_right = 48.0
-offset_bottom = 67.0
-
-[node name="GameOverPanel" type="Panel" parent="UI" unique_id=1105875736]
-visible = false
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-
-[node name="FinalScore" type="Label" parent="UI/GameOverPanel" unique_id=523025481]
+[node name="HBoxContainer" type="HBoxContainer" parent="UI/HeadPanel" unique_id=1066311687]
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -20.0
+offset_left = -60.0
 offset_top = -11.5
-offset_right = 20.0
+offset_right = 60.0
 offset_bottom = 11.5
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="RestartButton" type="Button" parent="UI/GameOverPanel" unique_id=1575871760]
+[node name="ScoreLabel" type="Label" parent="UI/HeadPanel/HBoxContainer" unique_id=1745412003]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.5019608)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 0.5019608)
+theme_override_constants/shadow_offset_x = 2
+theme_override_constants/shadow_offset_y = 2
+theme_override_constants/outline_size = 2
+theme_override_constants/shadow_outline_size = 2
+theme_override_font_sizes/font_size = 16
+text = "Score  0"
+
+[node name="Control" type="Control" parent="UI/HeadPanel/HBoxContainer" unique_id=1375259821]
+custom_minimum_size = Vector2(80, 0)
+layout_mode = 2
+
+[node name="BestScoreLabel" type="Label" parent="UI/HeadPanel/HBoxContainer" unique_id=2041837620]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.5019608)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 0.5019608)
+theme_override_constants/shadow_offset_x = 2
+theme_override_constants/shadow_offset_y = 2
+theme_override_constants/outline_size = 2
+theme_override_constants/shadow_outline_size = 2
+theme_override_font_sizes/font_size = 16
+text = "BEST  0"
+
+[node name="GainLabel" type="Label" parent="UI" unique_id=-1109046825]
+modulate = Color(1, 1, 1, 0)
+offset_left = 243.0
+offset_top = 479.0
+offset_right = 316.0
+offset_bottom = 524.0
+theme_override_font_sizes/font_size = 32
+text = "+100"
+
+[node name="ComboLabel" type="Label" parent="UI" unique_id=1413286005]
+modulate = Color(1, 1, 1, 0)
+offset_left = 199.0
+offset_top = 519.0
+offset_right = 361.0
+offset_bottom = 564.0
+theme_override_font_sizes/font_size = 32
+text = "Combo x1 "
+
+[node name="BottomMask" type="Control" parent="UI" unique_id=83708920]
+clip_contents = true
+layout_mode = 3
+anchors_preset = 0
+offset_top = 720.0
+offset_right = 560.0
+offset_bottom = 760.0
+
+[node name="TextureRect" type="TextureRect" parent="UI/BottomMask" unique_id=1859808913]
 layout_mode = 0
-offset_right = 8.0
-offset_bottom = 8.0
+offset_top = -720.0
+offset_right = 560.0
+offset_bottom = 40.0
+texture = ExtResource("2_h2yge")
+expand_mode = 1
+
+[node name="GameOverScreen" type="ColorRect" parent="UI" unique_id=1127232092]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.5019608)
+
+[node name="BGMLicense" type="Label" parent="UI/GameOverScreen" unique_id=406571563]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -84.0
+offset_top = -68.0
+offset_right = 84.0
+offset_bottom = -20.0
+grow_horizontal = 2
+grow_vertical = 0
+theme_override_colors/font_color = Color(0.627451, 0.627451, 0.627451, 1)
+theme_override_font_sizes/font_size = 10
+text = "Music: \"Life of Riley\" 
+Kevin MacLeod (incompetech.com)
+CC BY 4.0"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="VBoxContainer" type="VBoxContainer" parent="UI/GameOverScreen" unique_id=212393631]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -32.5
+offset_top = -42.5
+offset_right = 32.5
+offset_bottom = 42.5
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 20
+alignment = 1
+
+[node name="BestScore" type="Label" parent="UI/GameOverScreen/VBoxContainer" unique_id=430270802]
+layout_mode = 2
+theme_override_font_sizes/font_size = 32
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="FinalScore" type="Label" parent="UI/GameOverScreen/VBoxContainer" unique_id=523025481]
+layout_mode = 2
+theme_override_font_sizes/font_size = 32
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="RestartButton" type="Button" parent="UI/GameOverScreen/VBoxContainer" unique_id=1575871760]
+custom_minimum_size = Vector2(160, 60)
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_font_sizes/font_size = 32
+theme_override_styles/normal = SubResource("StyleBoxFlat_h2yge")
+theme_override_styles/hover = SubResource("StyleBoxFlat_1bvp3")
 text = "Restart"
 
 [node name="VersionLabel" type="Label" parent="UI" unique_id=1322240749]
-offset_right = 40.0
-offset_bottom = 23.0
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -40.0
+offset_top = -20.0
+offset_right = -3.0
+offset_bottom = -3.0
+grow_horizontal = 0
+grow_vertical = 0
+theme_override_colors/font_color = Color(1, 1, 1, 0.4)
+theme_override_font_sizes/font_size = 12
+text = "v 1.0.0"
+
+[node name="sfxDrop" type="AudioStreamPlayer" parent="UI" unique_id=140324908]
+stream = ExtResource("4_kek77")
+
+[node name="sfxClear" type="AudioStreamPlayer" parent="UI" unique_id=1867691205]
+stream = ExtResource("5_4c57u")
+
+[node name="sfxCombo" type="AudioStreamPlayer" parent="UI" unique_id=1788119233]
+stream = ExtResource("6_efxa6")
+
+[node name="sfxPush" type="AudioStreamPlayer" parent="UI" unique_id=2080729899]
+stream = ExtResource("7_dg77c")
+volume_db = -10.0
+
+[node name="sfxGameOver" type="AudioStreamPlayer" parent="UI" unique_id=870619989]
+stream = ExtResource("8_ycdy4")
+
+[node name="BGM" type="AudioStreamPlayer" parent="UI" unique_id=714711194]
+stream = ExtResource("4_1bvp3")
+volume_db = -15.0
+autoplay = true
+bus = &"BGM"
+parameters/looping = true

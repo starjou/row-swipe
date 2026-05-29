@@ -1,7 +1,7 @@
 extends Node2D
 class_name BarNode
 
-const MARGIN := 4.0
+const MARGIN := 2.0
 
 var bar_id: int = -1
 var bar_width: int = 1

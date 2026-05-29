@@ -2,6 +2,8 @@ extends Node2D
 
 signal game_over_signal
 signal score_updated(score: int, combo: int)
+signal bar_dropped
+signal row_pushed
 
 var bm: BoardManager
 var sm: ScoreManager
@@ -23,7 +25,7 @@ var _max_right: int = 0
 # ── 初始化 ─────────────────────────────────────────────────────────
 
 func _ready() -> void:
-	clip_children = CanvasItem.CLIP_CHILDREN_AND_DRAW
+	clip_children = CanvasItem.CLIP_CHILDREN_DISABLED
 	bm = BoardManager.new()
 	sm = ScoreManager.new()
 	_is_mobile = OS.has_feature("mobile") or OS.has_feature("web_android") or OS.has_feature("web_ios") or OS.has_feature("web_touchscreen")
@@ -58,8 +60,7 @@ func start_game() -> void:
 	for _i in 2:
 		var new_ids := bm.generate_row()
 		bm.push_row(new_ids)
-		bm.apply_gravity()
-		bm.clear_lines()
+	bm.apply_gravity()
 
 	for id in bm.bars:
 		_spawn_bar(id)
@@ -180,10 +181,10 @@ func _on_drag(local_pos: Vector2) -> void:
 	if not _dragging or _sel_id < 0 or not bm.bars.has(_sel_id):
 		return
 	var dx: float = local_pos.x - _drag_start_x
-	var delta: int = int(dx / BoardConst.CELL_SIZE)
-	_last_clamped = clampi(delta, _max_left, _max_right)
+	var clamped_dx: float = clampf(dx, _max_left * BoardConst.CELL_SIZE, _max_right * BoardConst.CELL_SIZE)
+	_last_clamped = roundi(clamped_dx / BoardConst.CELL_SIZE)
 	if bar_nodes.has(_sel_id):
-		bar_nodes[_sel_id].position.x = (_drag_start_col + _last_clamped) * BoardConst.CELL_SIZE
+		bar_nodes[_sel_id].position.x = _drag_start_col * BoardConst.CELL_SIZE + clamped_dx
 
 func _finalize_drag() -> void:
 	if not _dragging or _sel_id < 0:
@@ -205,6 +206,7 @@ func _finalize_drag() -> void:
 		return
 
 	if bm.move_bar(committed_id, clamped):
+		bar_dropped.emit()
 		if bar_nodes.has(committed_id):
 			var d: Dictionary = bm.get_bar_data(committed_id)
 			bar_nodes[committed_id].set_grid_pos(int(d["row"]), int(d["col"]))
@@ -253,6 +255,7 @@ func _push_new_row() -> bool:
 	if not bm.push_row(new_ids):
 		game_over_signal.emit()
 		return false
+	row_pushed.emit()
 	await _anim_push_row(new_ids)
 	return true
 
@@ -298,14 +301,11 @@ func _anim_push_row(new_ids: Array) -> void:
 # ── 背景繪製 ───────────────────────────────────────────────────────
 
 func _draw() -> void:
-	var board_w: float = BoardConst.COLS * BoardConst.CELL_SIZE
-	var board_h: float = BoardConst.ROWS * BoardConst.CELL_SIZE
-	draw_rect(Rect2(0, 0, board_w, board_h), Color(0.08, 0.08, 0.14))
-	var line_color := Color(1, 1, 1, 0.04)
-	for c in range(1, BoardConst.COLS):
-		var x: float = c * BoardConst.CELL_SIZE
-		draw_line(Vector2(x, 0), Vector2(x, board_h), line_color)
-	for r in range(1, BoardConst.ROWS):
-		var y: float = r * BoardConst.CELL_SIZE
-		draw_line(Vector2(0, y), Vector2(board_w, y), line_color)
-	draw_rect(Rect2(0, 0, board_w, board_h), Color(1, 1, 1, 0.15), false, 2.0)
+	var cs := BoardConst.CELL_SIZE
+	var board_w := BoardConst.COLS * cs
+	var board_h := BoardConst.ROWS * cs
+	# 再疊上個別格子
+	var cell_color := Color(0.2, 0.2, 0.2, 0.5)
+	for r in BoardConst.ROWS:
+		for c in BoardConst.COLS:
+			draw_rect(Rect2(c * cs, r * cs, cs - 1, cs - 1), cell_color)
