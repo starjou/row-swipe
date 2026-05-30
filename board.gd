@@ -221,6 +221,7 @@ func _finalize_drag() -> void:
 # ── 遊戲迴圈 ───────────────────────────────────────────────────────
 
 func _run_turn() -> void:
+	sm.reset_combo()
 	await _resolve_physics()
 	if not await _push_new_row():
 		return
@@ -244,7 +245,6 @@ func _resolve_physics() -> void:
 			await _anim_clear(result["bar_ids"])
 			await get_tree().create_timer(BoardConst.ANIM_PAUSE).timeout
 		else:
-			sm.reset_combo()
 			break
 	_sync_positions_instant()
 
