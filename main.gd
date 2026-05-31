@@ -21,46 +21,74 @@ var _prev_score: int = 0
 var _float_tweens: Dictionary = {}   # Label -> Tween
 var _label_bases: Dictionary = {}    # Label -> Vector2 (起始位置)
 
+var _loading_label: Label = null
+
 func _ready() -> void:
 	board.game_over_signal.connect(_on_game_over)
 	board.score_updated.connect(_on_score_updated)
 	board.bar_dropped.connect(func(): sfx_drop.play())
 	board.row_pushed.connect(func(): sfx_push.play())
 	restart_btn.pressed.connect(_on_restart)
-	version_label.text = "v1.1.1"
-	board.sm.best_score = _load_best_score()
-	_update_best_label()
+	version_label.text = "v1.1.2"
 	# 記錄浮動 label 的初始位置
 	_label_bases[combo_label] = combo_label.position
 	_label_bases[gain_label]  = gain_label.position
 	bgm.finished.connect(func(): bgm.play())
-	_start()
+
+	# 建立 loading label
+	_loading_label = Label.new()
+	_loading_label.text = "Loading..."
+	_loading_label.add_theme_font_size_override("font_size", 32)
+	_loading_label.add_theme_color_override("font_color", Color.WHITE)
+	_loading_label.set_anchors_preset(Control.PRESET_CENTER)
+	_loading_label.grow_horizontal = Control.GROW_DIRECTION_BOTH
+	_loading_label.grow_vertical = Control.GROW_DIRECTION_BOTH
+	$UI.add_child(_loading_label)
+
+	game_over_screen.visible = false
+	_load_best_score_async()
 
 # ── 最高分存讀 ─────────────────────────────────────────────────────
 
 const FIREBASE_URL = "https://row-swipe-default-rtdb.asia-southeast1.firebasedatabase.app"
 
-func _load_best_score() -> int:
-	if OS.get_name() == "Web":
-		var val = JavaScriptBridge.eval("""
-			(function() {
-				try {
-					var xhr = new XMLHttpRequest();
-					xhr.open('GET', '%s/best_score.json', false);
-					xhr.send();
-					if (xhr.status === 200) {
-						var v = parseInt(xhr.responseText);
-						return isNaN(v) ? 0 : v;
-					}
-				} catch(e) {}
-				return 0;
-			})()
-		""" % FIREBASE_URL)
-		return int(val) if val != null else 0
-	if FileAccess.file_exists("user://best_score.dat"):
-		var f := FileAccess.open("user://best_score.dat", FileAccess.READ)
-		return f.get_32()
-	return 0
+func _load_best_score_async() -> void:
+	# 非 Web：直接讀檔，不需要等待
+	if OS.get_name() != "Web":
+		if FileAccess.file_exists("user://best_score.dat"):
+			var f := FileAccess.open("user://best_score.dat", FileAccess.READ)
+			board.sm.best_score = f.get_32()
+		_on_load_done()
+		return
+
+	# Web：HTTPRequest 非同步讀取
+	var http := HTTPRequest.new()
+	add_child(http)
+
+	var err := http.request(FIREBASE_URL + "/best_score.json")
+	if err != OK:
+		http.queue_free()
+		_on_load_done()
+		return
+
+	var response: Array = await http.request_completed
+	http.queue_free()
+
+	var result: int = response[0]
+	var response_code: int = response[1]
+	var body: PackedByteArray = response[3]
+
+	if result == HTTPRequest.RESULT_SUCCESS and response_code == 200:
+		var val := body.get_string_from_utf8().to_int()
+		board.sm.best_score = maxi(board.sm.best_score, val)
+
+	_on_load_done()
+
+func _on_load_done() -> void:
+	_loading_label.queue_free()
+	_loading_label = null
+	_update_best_label()
+	_start()
 
 func _save_best_score(val: int) -> void:
 	if OS.get_name() == "Web":
@@ -71,15 +99,21 @@ func _save_best_score(val: int) -> void:
 					xhr.open('GET', '%s/best_score.json', false);
 					xhr.send();
 					var current = (xhr.status === 200) ? (parseInt(xhr.responseText) || 0) : 0;
+					window._godot_remote_best = current;
 					if (%d > current) {
 						var xhr2 = new XMLHttpRequest();
 						xhr2.open('PUT', '%s/best_score.json', true);
 						xhr2.setRequestHeader('Content-Type', 'application/json');
 						xhr2.send(JSON.stringify(%d));
 					}
-				} catch(e) {}
+				} catch(e) { window._godot_remote_best = 0; }
 			})()
 		""" % [FIREBASE_URL, val, FIREBASE_URL, val])
+		# 把遠端讀到的值同步回 GDScript
+		var remote := int(JavaScriptBridge.eval("window._godot_remote_best || 0"))
+		if remote > board.sm.best_score:
+			board.sm.best_score = remote
+			_update_best_label()
 		return
 	var f := FileAccess.open("user://best_score.dat", FileAccess.WRITE)
 	f.store_32(val)
