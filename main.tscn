@@ -211,7 +211,6 @@ texture = ExtResource("2_h2yge")
 expand_mode = 1
 
 [node name="EndConfirmPanel" type="PanelContainer" parent="UI" unique_id=613465385]
-visible = false
 anchors_preset = 8
 anchor_left = 0.5
 anchor_top = 0.5
@@ -232,7 +231,7 @@ alignment = 1
 [node name="Label" type="Label" parent="UI/EndConfirmPanel/VBoxContainer" unique_id=997923328]
 layout_mode = 2
 theme_override_font_sizes/font_size = 24
-text = "確定要結束這局嗎？"
+text = "End  this Game?"
 horizontal_alignment = 1
 
 [node name="Control" type="Control" parent="UI/EndConfirmPanel/VBoxContainer" unique_id=1269132455]
@@ -250,7 +249,7 @@ layout_mode = 2
 theme_override_font_sizes/font_size = 24
 theme_override_styles/normal = SubResource("StyleBoxFlat_w48qg")
 theme_override_styles/hover = SubResource("StyleBoxFlat_2cqfq")
-text = "確定"
+text = "Yes"
 
 [node name="CancelBtn" type="Button" parent="UI/EndConfirmPanel/VBoxContainer/HBoxContainer" unique_id=1727978214]
 custom_minimum_size = Vector2(112, 48)
@@ -258,7 +257,7 @@ layout_mode = 2
 theme_override_font_sizes/font_size = 24
 theme_override_styles/normal = SubResource("StyleBoxFlat_vivmo")
 theme_override_styles/hover = SubResource("StyleBoxFlat_yaehf")
-text = "取消"
+text = "No	"
 
 [node name="GameOverScreen" type="ColorRect" parent="UI" unique_id=1127232092]
 visible = false

@@ -41,7 +41,7 @@ func _ready() -> void:
 	board.bar_dropped.connect(func(): sfx_drop.play())
 	board.row_pushed.connect(func(): sfx_push.play())
 	restart_btn.pressed.connect(_on_restart)
-	version_label.text = "v1.3.1"
+	version_label.text = "v1.3.2"
 	# 記錄浮動 label 的初始位置
 	_label_bases[combo_label] = combo_label.position
 	_label_bases[gain_label]  = gain_label.position
