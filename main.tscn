@@ -31,6 +31,45 @@ corner_radius_top_right = 36
 corner_radius_bottom_right = 36
 corner_radius_bottom_left = 36
 
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ycdy4"]
+content_margin_left = 40.0
+content_margin_top = 40.0
+content_margin_right = 40.0
+content_margin_bottom = 32.0
+bg_color = Color(0, 0, 0, 0.6)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_w48qg"]
+bg_color = Color(0, 0, 0, 1)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+shadow_color = Color(1, 1, 1, 0.6)
+shadow_size = 4
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_2cqfq"]
+bg_color = Color(0.09411765, 0.09411765, 0.09411765, 1)
+shadow_color = Color(1, 1, 1, 0.6)
+shadow_size = 8
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_vivmo"]
+bg_color = Color(0, 0, 0, 1)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+shadow_color = Color(1, 1, 1, 0.6)
+shadow_size = 4
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_yaehf"]
+bg_color = Color(0.09411765, 0.09411765, 0.09411765, 1)
+shadow_color = Color(1, 1, 1, 0.6)
+shadow_size = 8
+
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_h2yge"]
 content_margin_left = 4.0
 content_margin_top = 4.0
@@ -139,9 +178,9 @@ icon = ExtResource("4_4c57u")
 [node name="GainLabel" type="Label" parent="UI" unique_id=-1109046825]
 modulate = Color(1, 1, 1, 0)
 offset_left = 243.0
-offset_top = 479.0
+offset_top = 459.0
 offset_right = 316.0
-offset_bottom = 524.0
+offset_bottom = 504.0
 theme_override_font_sizes/font_size = 32
 text = "+100"
 
@@ -171,7 +210,58 @@ offset_bottom = 40.0
 texture = ExtResource("2_h2yge")
 expand_mode = 1
 
+[node name="EndConfirmPanel" type="PanelContainer" parent="UI" unique_id=613465385]
+visible = false
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -140.0
+offset_top = -69.0
+offset_right = 140.0
+offset_bottom = 69.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_ycdy4")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="UI/EndConfirmPanel" unique_id=169489461]
+layout_mode = 2
+alignment = 1
+
+[node name="Label" type="Label" parent="UI/EndConfirmPanel/VBoxContainer" unique_id=997923328]
+layout_mode = 2
+theme_override_font_sizes/font_size = 24
+text = "確定要結束這局嗎？"
+horizontal_alignment = 1
+
+[node name="Control" type="Control" parent="UI/EndConfirmPanel/VBoxContainer" unique_id=1269132455]
+custom_minimum_size = Vector2(0, 32)
+layout_mode = 2
+
+[node name="HBoxContainer" type="HBoxContainer" parent="UI/EndConfirmPanel/VBoxContainer" unique_id=1806409744]
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_constants/separation = 32
+
+[node name="ConfirmBtn" type="Button" parent="UI/EndConfirmPanel/VBoxContainer/HBoxContainer" unique_id=1079466841]
+custom_minimum_size = Vector2(112, 48)
+layout_mode = 2
+theme_override_font_sizes/font_size = 24
+theme_override_styles/normal = SubResource("StyleBoxFlat_w48qg")
+theme_override_styles/hover = SubResource("StyleBoxFlat_2cqfq")
+text = "確定"
+
+[node name="CancelBtn" type="Button" parent="UI/EndConfirmPanel/VBoxContainer/HBoxContainer" unique_id=1727978214]
+custom_minimum_size = Vector2(112, 48)
+layout_mode = 2
+theme_override_font_sizes/font_size = 24
+theme_override_styles/normal = SubResource("StyleBoxFlat_vivmo")
+theme_override_styles/hover = SubResource("StyleBoxFlat_yaehf")
+text = "取消"
+
 [node name="GameOverScreen" type="ColorRect" parent="UI" unique_id=1127232092]
+visible = false
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0

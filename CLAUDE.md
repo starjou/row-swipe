@@ -39,7 +39,8 @@ board_const.gd — 全域常數（ROWS、COLS、CELL_SIZE、動畫時間）。
 
 - 載入完成 → Start 畫面（game_over_screen 顯示，FinalScore 隱藏，按鈕文字 "Start"）
 - 按 Start/Restart → 遊戲開始，End 按鈕出現（位於 HeadPanel）
-- 按 End 或 game over → Game Over 畫面（FinalScore 顯示，按鈕文字 "Restart"）
+- 按 End → EndConfirmPanel 彈出確認；確定才結束，取消恢復遊戲
+- game over → Game Over 畫面（FinalScore 顯示，按鈕文字 "Restart"）
 - Start/Game Over 畫面靜置 5 秒 → Demo Mode 自動啟動
 - 遊戲進行中靜置 15 秒 → Board + HeadPanel fade out（0.3s）；任何輸入 → fade in
 
@@ -54,6 +55,6 @@ board_const.gd — 全域常數（ROWS、COLS、CELL_SIZE、動畫時間）。
 ## Scoring
 
 - 單次得分：`BASE_PER_LINE (100) × (2^line_count - 1)`（多行指數加成，1行=100，2行=300，3行=700）
-- combo 倍率：`× 2^(combo+1)`（combo 1 = ×4，combo 2 = ×8）
-- combo 在每次拖曳成功移動時歸零（`_finalize_drag`），同一次拖曳的連鎖消行累積 combo
+- combo 倍率：第 1 次消行（combo 0）無倍率；之後每次 `× 2^(combo+1)`（combo 1 = ×4，combo 2 = ×8）
+- combo 在每次拖曳成功移動時歸零（`_finalize_drag`），跨拖曳累積；同一次拖曳的連鎖消行也累積 combo
 - `best_score` 由 `main.gd` 的 `_on_score_updated` 維護（不在 ScoreManager 內更新）

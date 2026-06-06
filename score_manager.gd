@@ -16,10 +16,14 @@ func reset() -> void:
 
 ## 每次消行後呼叫，支援連消加成
 func add_clears(line_count: int) -> void:
+	var base := BASE_PER_LINE * (int(pow(2, line_count)) - 1)
+	if combo > 0:
+		# 有連消：combo 1 = ×4，combo 2 = ×8…
+		score += base * int(pow(2, combo + 1))
+	else:
+		score += base
 	combo += 1
 	best_combo = maxi(best_combo, combo)
-	# 分數 = 底分 × (2^行數 - 1) × 2^(combo+1)
-	score += BASE_PER_LINE * (int(pow(2, line_count)) - 1) * int(pow(2, combo + 1))
 
 ## 沒有消行時重置連消
 func reset_combo() -> void:

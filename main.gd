@@ -11,6 +11,9 @@ extends Node
 @onready var final_score_label: Label = $UI/GameOverScreen/VBoxContainer/FinalScore
 @onready var restart_btn: Button = $UI/GameOverScreen/VBoxContainer/RestartButton
 @onready var end_btn: Button = $UI/HeadPanel/EndButton
+@onready var end_confirm_panel: Control = $UI/EndConfirmPanel
+@onready var confirm_btn: Button = $UI/EndConfirmPanel/VBoxContainer/HBoxContainer/ConfirmBtn
+@onready var cancel_btn: Button = $UI/EndConfirmPanel/VBoxContainer/HBoxContainer/CancelBtn
 @onready var version_label: Label = $UI/VersionLabel
 @onready var sfx_drop: AudioStreamPlayer = $UI/sfxDrop
 @onready var sfx_clear: AudioStreamPlayer = $UI/sfxClear
@@ -38,7 +41,7 @@ func _ready() -> void:
 	board.bar_dropped.connect(func(): sfx_drop.play())
 	board.row_pushed.connect(func(): sfx_push.play())
 	restart_btn.pressed.connect(_on_restart)
-	version_label.text = "v1.3.0"
+	version_label.text = "v1.3.1"
 	# 記錄浮動 label 的初始位置
 	_label_bases[combo_label] = combo_label.position
 	_label_bases[gain_label]  = gain_label.position
@@ -55,6 +58,11 @@ func _ready() -> void:
 	$UI.add_child(_loading_label)
 
 	end_btn.pressed.connect(_on_end_pressed)
+	confirm_btn.pressed.connect(_do_end_game)
+	cancel_btn.pressed.connect(func():
+		end_confirm_panel.visible = false
+		board._set_input(true)
+	)
 
 	game_over_screen.visible = false
 	_load_best_score_async()
@@ -246,6 +254,10 @@ func _on_score_updated(score: int, combo: int) -> void:
 
 func _on_end_pressed() -> void:
 	board._set_input(false)
+	end_confirm_panel.visible = true
+
+func _do_end_game() -> void:
+	end_confirm_panel.visible = false
 	_on_game_over()
 
 func _on_game_over() -> void:
