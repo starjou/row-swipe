@@ -18,9 +18,8 @@ func reset() -> void:
 func add_clears(line_count: int) -> void:
 	combo += 1
 	best_combo = maxi(best_combo, combo)
-	# 分數 = 底分 × 消行數 × 連消倍率
-	score += BASE_PER_LINE * line_count * combo
-	best_score = maxi(best_score, score)
+	# 分數 = 底分 × (2^行數 - 1) × 2^(combo+1)
+	score += BASE_PER_LINE * (int(pow(2, line_count)) - 1) * int(pow(2, combo + 1))
 
 ## 沒有消行時重置連消
 func reset_combo() -> void:

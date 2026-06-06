@@ -123,6 +123,19 @@ theme_override_constants/shadow_outline_size = 2
 theme_override_font_sizes/font_size = 16
 text = "BEST  0"
 
+[node name="EndButton" type="Button" parent="UI/HeadPanel" unique_id=404172087]
+visible = false
+layout_mode = 0
+offset_left = 520.0
+offset_top = 8.0
+offset_right = 584.0
+offset_bottom = 72.0
+scale = Vector2(0.5, 0.5)
+theme_override_styles/normal = SubResource("StyleBoxFlat_efxa6")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_dg77c")
+theme_override_styles/hover = SubResource("StyleBoxFlat_4c57u")
+icon = ExtResource("4_4c57u")
+
 [node name="GainLabel" type="Label" parent="UI" unique_id=-1109046825]
 modulate = Color(1, 1, 1, 0)
 offset_left = 243.0
@@ -157,18 +170,6 @@ offset_right = 560.0
 offset_bottom = 40.0
 texture = ExtResource("2_h2yge")
 expand_mode = 1
-
-[node name="EndButton" type="Button" parent="UI" unique_id=404172087]
-visible = false
-offset_left = 520.0
-offset_top = 8.0
-offset_right = 584.0
-offset_bottom = 72.0
-scale = Vector2(0.5, 0.5)
-theme_override_styles/normal = SubResource("StyleBoxFlat_efxa6")
-theme_override_styles/pressed = SubResource("StyleBoxFlat_dg77c")
-theme_override_styles/hover = SubResource("StyleBoxFlat_4c57u")
-icon = ExtResource("4_4c57u")
 
 [node name="GameOverScreen" type="ColorRect" parent="UI" unique_id=1127232092]
 anchors_preset = 15

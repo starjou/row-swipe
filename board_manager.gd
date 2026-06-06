@@ -253,3 +253,36 @@ func clear_lines() -> Dictionary:
 			bars.erase(id)
 
 	return {"count": count, "bar_ids": removed_ids}
+
+# ── Demo AI 輔助 ────────────────────────────────────────────────────
+
+func _clone() -> BoardManager:
+	var c := BoardManager.new()
+	c._next_id = _next_id
+	for r in BoardConst.ROWS:
+		c.grid.append(grid[r].duplicate())
+	for id in bars:
+		c.bars[id] = bars[id].duplicate()
+	return c
+
+## 模擬移動後連鎖消行，回傳評分（越高越好）
+func score_move(bar_id: int, delta_col: int) -> int:
+	var c := _clone()
+	if not c.move_bar(bar_id, delta_col):
+		return -1
+	var total_clears := 0
+	for _pass in 5:
+		c.apply_gravity()
+		var result := c.clear_lines()
+		if result["count"] == 0:
+			break
+		total_clears += int(result["count"])
+	if total_clears > 0:
+		return total_clears * 100
+	# 無立即消行：給目標列的填滿程度加分
+	var row: int = int(bars[bar_id]["row"])
+	var filled := 0
+	for col in BoardConst.COLS:
+		if c.grid[row][col] != -1:
+			filled += 1
+	return filled

@@ -12,6 +12,9 @@ var bar_nodes: Dictionary = {}
 # 裝置類型
 var _is_mobile: bool = false
 
+# Demo 狀態
+var _demo_mode: bool = false
+
 # 拖曳狀態
 var _input_on: bool = false
 var _dragging: bool = false
@@ -206,6 +209,7 @@ func _finalize_drag() -> void:
 		return
 
 	if bm.move_bar(committed_id, clamped):
+		sm.reset_combo()
 		bar_dropped.emit()
 		if bar_nodes.has(committed_id):
 			var d: Dictionary = bm.get_bar_data(committed_id)
@@ -221,7 +225,6 @@ func _finalize_drag() -> void:
 # ── 遊戲迴圈 ───────────────────────────────────────────────────────
 
 func _run_turn() -> void:
-	sm.reset_combo()
 	await _resolve_physics()
 	if not await _push_new_row():
 		return
@@ -297,6 +300,79 @@ func _anim_push_row(new_ids: Array) -> void:
 			last_tw = bar_nodes[id].tween_slide_up(target_row)
 	if last_tw:
 		await last_tw.finished
+
+# ── Demo Mode ──────────────────────────────────────────────────────
+
+func start_demo_mode() -> void:
+	_demo_mode = true
+	_set_input(false)
+	_run_demo()
+
+func stop_demo_mode() -> void:
+	_demo_mode = false
+
+func _run_demo() -> void:
+	while _demo_mode:
+		await get_tree().create_timer(0.9).timeout
+		if not _demo_mode:
+			break
+		var move := _pick_best_move()
+		if move.is_empty():
+			break
+		await _demo_animate_move(int(move["bar_id"]), int(move["delta"]))
+		if not _demo_mode:
+			break
+		if bm.move_bar(int(move["bar_id"]), int(move["delta"])):
+			bar_dropped.emit()
+			_sync_positions_instant()
+			sm.reset_combo()
+			await _resolve_physics()
+			if not _demo_mode:
+				break
+			if not await _push_new_row():
+				break
+			await _resolve_physics()
+			while bm.is_empty():
+				if not _demo_mode:
+					break
+				if not await _push_new_row():
+					_demo_mode = false
+					break
+				await _resolve_physics()
+
+func _demo_animate_move(bar_id: int, delta: int) -> void:
+	if not bar_nodes.has(bar_id):
+		return
+	var d := bm.get_bar_data(bar_id)
+	if d.is_empty():
+		return
+	var target_x: float = (int(d["col"]) + delta) * BoardConst.CELL_SIZE
+	var tw := create_tween().set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN_OUT)
+	tw.tween_property(bar_nodes[bar_id], "position:x", target_x, 0.35)
+	await tw.finished
+
+func _pick_best_move() -> Dictionary:
+	if bm.bars.is_empty():
+		return {}
+	var best_score := -1
+	var candidates: Array = []
+	for bar_id in bm.bars:
+		var max_l := bm.max_left_distance(bar_id)
+		var max_r := bm.max_right_distance(bar_id)
+		for delta in range(max_l, max_r + 1):
+			if delta == 0:
+				continue
+			var s := bm.score_move(bar_id, delta)
+			if s < 0:
+				continue
+			if s > best_score:
+				best_score = s
+				candidates = [{"bar_id": bar_id, "delta": delta}]
+			elif s == best_score:
+				candidates.append({"bar_id": bar_id, "delta": delta})
+	if candidates.is_empty():
+		return {}
+	return candidates[randi() % candidates.size()]
 
 # ── 背景繪製 ───────────────────────────────────────────────────────
 
