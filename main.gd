@@ -9,6 +9,7 @@ extends Node
 @onready var go_best_score_label: Label = $UI/GameOverScreen/VBoxContainer/BestScore
 @onready var final_score_label: Label = $UI/GameOverScreen/VBoxContainer/FinalScore
 @onready var restart_btn: Button = $UI/GameOverScreen/VBoxContainer/RestartButton
+@onready var end_btn: Button = $UI/EndButton
 @onready var version_label: Label = $UI/VersionLabel
 @onready var sfx_drop: AudioStreamPlayer = $UI/sfxDrop
 @onready var sfx_clear: AudioStreamPlayer = $UI/sfxClear
@@ -29,7 +30,7 @@ func _ready() -> void:
 	board.bar_dropped.connect(func(): sfx_drop.play())
 	board.row_pushed.connect(func(): sfx_push.play())
 	restart_btn.pressed.connect(_on_restart)
-	version_label.text = "v1.1.2"
+	version_label.text = "v1.2.0"
 	# 記錄浮動 label 的初始位置
 	_label_bases[combo_label] = combo_label.position
 	_label_bases[gain_label]  = gain_label.position
@@ -44,6 +45,8 @@ func _ready() -> void:
 	_loading_label.grow_horizontal = Control.GROW_DIRECTION_BOTH
 	_loading_label.grow_vertical = Control.GROW_DIRECTION_BOTH
 	$UI.add_child(_loading_label)
+
+	end_btn.pressed.connect(_on_end_pressed)
 
 	game_over_screen.visible = false
 	_load_best_score_async()
@@ -88,7 +91,7 @@ func _on_load_done() -> void:
 	_loading_label.queue_free()
 	_loading_label = null
 	_update_best_label()
-	_start()
+	_show_start_screen()
 
 func _save_best_score(val: int) -> void:
 	if OS.get_name() == "Web":
@@ -136,12 +139,19 @@ func _float_out(label: Label, text: String) -> void:
 
 # ── 遊戲流程 ───────────────────────────────────────────────────────
 
+func _show_start_screen() -> void:
+	go_best_score_label.text = "BEST: %d" % board.sm.best_score
+	final_score_label.visible = false
+	restart_btn.text = "Start"
+	game_over_screen.visible = true
+
 func _start() -> void:
 	game_over_screen.visible = false
 	score_label.text = "Score  0"
 	_prev_score = 0
 	combo_label.modulate.a = 0.0
 	gain_label.modulate.a = 0.0
+	end_btn.visible = true
 	board.start_game()
 
 func _on_score_updated(score: int, combo: int) -> void:
@@ -157,14 +167,23 @@ func _on_score_updated(score: int, combo: int) -> void:
 	else:
 		sfx_clear.play()
 
+func _on_end_pressed() -> void:
+	board.set_process(false)
+	board._set_input(false)
+	_on_game_over()
+
 func _on_game_over() -> void:
+	end_btn.visible = false
 	_save_best_score(board.sm.best_score)
 	go_best_score_label.text = "BEST: %d" % board.sm.best_score
 	final_score_label.text = "Score: %d" % board.sm.score
+	final_score_label.visible = true
+	restart_btn.text = "Restart"
 	sfx_game_over.play()
 	bgm.stop()
 	game_over_screen.visible = true
 
 func _on_restart() -> void:
-	bgm.play()
+	if not bgm.playing:
+		bgm.play()
 	_start()

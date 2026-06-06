@@ -4,11 +4,32 @@
 [ext_resource type="Script" uid="uid://cba5q4r3c3s6o" path="res://board.gd" id="2_0xm2m"]
 [ext_resource type="Texture2D" uid="uid://dx2vgsv7a80wp" path="res://assets/images/bg.png" id="2_h2yge"]
 [ext_resource type="AudioStream" uid="uid://dr4ttvoew04gb" path="res://assets/sounds/bgm.mp3" id="4_1bvp3"]
+[ext_resource type="Texture2D" uid="uid://c47ibo74gsev6" path="res://assets/images/endButton.png" id="4_4c57u"]
 [ext_resource type="AudioStream" uid="uid://dv784lpj5xmnb" path="res://assets/sounds/drop.ogg" id="4_kek77"]
 [ext_resource type="AudioStream" uid="uid://bynhmap6bm1cj" path="res://assets/sounds/clear.ogg" id="5_4c57u"]
 [ext_resource type="AudioStream" uid="uid://bo3qkv4whsxgg" path="res://assets/sounds/combo.ogg" id="6_efxa6"]
 [ext_resource type="AudioStream" uid="uid://dyj7d1fb7a1xy" path="res://assets/sounds/push.ogg" id="7_dg77c"]
 [ext_resource type="AudioStream" uid="uid://vnn4ikd5v8pw" path="res://assets/sounds/game_over.ogg" id="8_ycdy4"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_efxa6"]
+corner_radius_top_left = 32
+corner_radius_top_right = 32
+corner_radius_bottom_right = 36
+corner_radius_bottom_left = 36
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_dg77c"]
+bg_color = Color(0.6, 0, 0, 1)
+corner_radius_top_left = 36
+corner_radius_top_right = 36
+corner_radius_bottom_right = 36
+corner_radius_bottom_left = 36
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_4c57u"]
+bg_color = Color(0.2, 0.2, 0.2, 1)
+corner_radius_top_left = 36
+corner_radius_top_right = 36
+corner_radius_bottom_right = 36
+corner_radius_bottom_left = 36
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_h2yge"]
 content_margin_left = 4.0
@@ -57,9 +78,8 @@ offset_bottom = 600.0
 [node name="HeadPanel" type="Control" parent="UI" unique_id=529273618]
 layout_mode = 3
 anchors_preset = 0
-offset_top = 10.0
 offset_right = 560.0
-offset_bottom = 130.0
+offset_bottom = 120.0
 
 [node name="HBoxContainer" type="HBoxContainer" parent="UI/HeadPanel" unique_id=1066311687]
 layout_mode = 1
@@ -130,12 +150,25 @@ offset_right = 560.0
 offset_bottom = 760.0
 
 [node name="TextureRect" type="TextureRect" parent="UI/BottomMask" unique_id=1859808913]
+visible = false
 layout_mode = 0
 offset_top = -720.0
 offset_right = 560.0
 offset_bottom = 40.0
 texture = ExtResource("2_h2yge")
 expand_mode = 1
+
+[node name="EndButton" type="Button" parent="UI" unique_id=404172087]
+visible = false
+offset_left = 520.0
+offset_top = 8.0
+offset_right = 584.0
+offset_bottom = 72.0
+scale = Vector2(0.5, 0.5)
+theme_override_styles/normal = SubResource("StyleBoxFlat_efxa6")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_dg77c")
+theme_override_styles/hover = SubResource("StyleBoxFlat_4c57u")
+icon = ExtResource("4_4c57u")
 
 [node name="GameOverScreen" type="ColorRect" parent="UI" unique_id=1127232092]
 anchors_preset = 15
@@ -185,14 +218,20 @@ alignment = 1
 [node name="BestScore" type="Label" parent="UI/GameOverScreen/VBoxContainer" unique_id=430270802]
 layout_mode = 2
 theme_override_font_sizes/font_size = 32
+text = "Best Score"
 horizontal_alignment = 1
 vertical_alignment = 1
 
 [node name="FinalScore" type="Label" parent="UI/GameOverScreen/VBoxContainer" unique_id=523025481]
 layout_mode = 2
 theme_override_font_sizes/font_size = 32
+text = "Final Score"
 horizontal_alignment = 1
 vertical_alignment = 1
+
+[node name="space" type="Control" parent="UI/GameOverScreen/VBoxContainer" unique_id=78412855]
+custom_minimum_size = Vector2(0, 10)
+layout_mode = 2
 
 [node name="RestartButton" type="Button" parent="UI/GameOverScreen/VBoxContainer" unique_id=1575871760]
 custom_minimum_size = Vector2(160, 60)
