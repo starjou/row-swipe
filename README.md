@@ -1,5 +1,7 @@
 # Row Swipe
 
+![Row Swipe screenshot](docs/screenshot.png)
+
 A sliding puzzle game built with Godot 4. Drag rows left and right to align matching colors — clear lines to score points before the board fills up.
 
 **Play on itch.io:** https://starjou.itch.io/row-swipe
